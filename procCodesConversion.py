@@ -2,8 +2,8 @@ import pickle
 import datetime
 
 print("Loading data...")
-data = pickle.load(open('data.pyo', 'rb'))
-col = pickle.load(open('col.pyo', 'rb'))
+data = pickle.load(open('data.pkl', 'rb'))
+col = pickle.load(open('col.pkl', 'rb'))
 print("Data loaded")
 
 def notNA(s):
@@ -25,5 +25,5 @@ for row in data:
       row[proccol] = ccsmap[row[proccol]]
 print('end ', datetime.datetime.now())
 
-print('Saving result into data_proc_ccs.pyo...')
-pickle.dump(data, open('data_proc_ccs.pyo', 'wb'))
+print('Saving result into data_proc_ccs.pkl...')
+pickle.dump(data, open('data_proc_ccs.pkl', 'wb'))

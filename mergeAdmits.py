@@ -5,8 +5,8 @@ import itertools
 import pickle
 
 print("Loading data...")
-data = pickle.load(open('data_proc_ccs.pyo', 'rb'))
-col = pickle.load(open('col.pyo', 'rb'))
+data = pickle.load(open('data_proc_ccs.pkl', 'rb'))
+col = pickle.load(open('col.pkl', 'rb'))
 print("Data loaded")
 
 def notNA(s):
@@ -88,5 +88,5 @@ def mergeData(data):
 print("start ", datetime.datetime.now())
 newdata = mergeData(data)
 print("end ", datetime.datetime.now())
-print("Saving result into new_data_merge.pyo...")
-pickle.dump(newdata, open('new_data_merge.pyo', 'wb'))
+print("Saving result into new_data_merge.pkl...")
+pickle.dump(newdata, open('new_data_merge.pkl', 'wb'))
