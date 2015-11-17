@@ -5,7 +5,7 @@ import itertools
 import pickle
 
 print("Loading data...")
-data = pickle.load(open('data_proc_ccs.pkl', 'rb'))
+data = pickle.load(open('transfer_data_new_proc_ccs.pkl', 'rb'))
 col = pickle.load(open('col.pkl', 'rb'))
 print("Data loaded")
 
@@ -18,8 +18,12 @@ def mergeRows(rows):
   result[col['admtdate_Date']] = min(row[col['admtdate_Date']] for row in rows)
   result[col['dschdate_Date']] = max(row[col['dschdate_Date']] for row in rows)
   result[col['next_admit_date']] = max(row[col['next_admit_date']] for row in rows)
+
+  next_admit_date = datetime.datetime.strptime(result[col['next_admit_date']], '%Y-%m-%d') if notNA(result[col['next_admit_date']]) else 'NA'
   dschdate = datetime.datetime.strptime(result[col['dschdate_Date']], '%Y-%m-%d')
   admtdate = datetime.datetime.strptime(result[col['admtdate_Date']], '%Y-%m-%d')
+
+  result[col['daysBtwAdmits']] = (next_admit_date - dschdate).days if notNA(next_admit_date) else 'NA'
   result[col['los_adj']] = (dschdate - admtdate).days
   result[col['disp']] = rows[-1][col['disp']]
 
@@ -28,6 +32,9 @@ def mergeRows(rows):
   for row in rows:
     dxCodes=dxCodes.union([row[item[1]] for item in col.items() if item[0].find('odiag') >= 0 and notNA(row[item[1]])])
     prCodes=prCodes.union([row[item[1]] for item in col.items() if item[0].find('oproc') >= 0 and notNA(row[item[1]])])
+    dxCodes=dxCodes.union([row[item[1]] for item in col.items() if item[0].find('diag_p.y') >= 0 and notNA(row[item[1]])])
+    prCodes=prCodes.union([row[item[1]] for item in col.items() if item[0].find('proc_p') >= 0 and notNA(row[item[1]])])
+    
 
   dxCodes = list(dxCodes)
   prCodes = list(prCodes)
@@ -43,6 +50,7 @@ def mergeRows(rows):
   proc_p = list(row[col['o_proc_p']] for row in rows if notNA(row[col['o_proc_p']])) + list(row[col['proc_p']] for row in rows if notNA(row[col['proc_p']]))
   result[col['proc_p']] = proc_p[-1] if len(proc_p) > 0 else 'NA'
   result[col['o_proc_p']] = ','.join(str(proc) for proc in proc_p[:-1]) if len(proc_p) > 1 else 'NA'
+  
   # typcare and sev_code need the latest admit
   # src columns need the earliest admit
   for att in ['typcare', 'sev_code']:
@@ -58,9 +66,9 @@ def mergeRows(rows):
   return result
 
 def mergeData(data):
-  newdata = []
   i = 0
   while (i < len(data) - 1):
+    tempdata = []
     if (i % 10000 == 0):
       print(str(float(i) * 100 / len(data)) + "%")
     rln = data[i][col["rln"]]
@@ -72,21 +80,17 @@ def mergeData(data):
         j = j + 1;
       else:
         break;
-    if (i == j):
-      # no need to merge, just copy over
-      newdata.append(data[i])
-      # if it is the second last record and no need to merge, then copy the last record
-      if (i == len(data) - 2):
-        newdata.append(data[i+1])
+   
+    if(i!=j):
+      row = mergeRows(data[i:j+1])
+      del data[i:j + 1]
+      data.insert(i, row)
     else:
-      # merge rows
-      newdata.append(mergeRows(data[i:j+1]))
-      i = j;
-    i = i + 1;
-  return newdata
+      i = i + 1;
+  return data
 
 print("start ", datetime.datetime.now())
 newdata = mergeData(data)
 print("end ", datetime.datetime.now())
-print("Saving result into new_data_merge.pkl...")
-pickle.dump(newdata, open('new_data_merge.pkl', 'wb'))
+print("Saving result into new_data_merge_updated.pkl...")
+pickle.dump(newdata, open('new_data_merge_updated.pkl', 'wb'))
