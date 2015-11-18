@@ -3,9 +3,10 @@
 import datetime
 import itertools
 import pickle
+import sys
 
 print("Loading data...")
-data = pickle.load(open('transfer_data_new_proc_ccs.pkl', 'rb'))
+data = pickle.load(open(sys.argv[1], 'rb'))
 col = pickle.load(open('col.pkl', 'rb'))
 print("Data loaded")
 
@@ -45,23 +46,23 @@ def mergeRows(rows):
   # merge primary diag
   diag_p = list(row[col['o_diag_p']] for row in rows if notNA(row[col['o_diag_p']])) + list(row[col['diag_p.y']] for row in rows if notNA(row[col['diag_p.y']]))
   result[col['diag_p.y']] = diag_p[-1] if len(diag_p) > 0 else 'NA'
-  result[col['o_diag_p']] = ','.join(str(diag) for diag in diag_p[:-1]) if len(diag_p) > 1 else 'NA'
+  result[col['o_diag_p']] = ':'.join(str(diag) for diag in diag_p[:-1]) if len(diag_p) > 1 else 'NA'
   # merge primary proc
   proc_p = list(row[col['o_proc_p']] for row in rows if notNA(row[col['o_proc_p']])) + list(row[col['proc_p']] for row in rows if notNA(row[col['proc_p']]))
   result[col['proc_p']] = proc_p[-1] if len(proc_p) > 0 else 'NA'
-  result[col['o_proc_p']] = ','.join(str(proc) for proc in proc_p[:-1]) if len(proc_p) > 1 else 'NA'
+  result[col['o_proc_p']] = ':'.join(str(proc) for proc in proc_p[:-1]) if len(proc_p) > 1 else 'NA'
   
   # typcare and sev_code need the latest admit
   # src columns need the earliest admit
   for att in ['typcare', 'sev_code']:
     atts = list(row[col['o' + att]] for row in rows if notNA(row[col['o' + att]])) + list(row[col[att]] for row in rows if notNA(row[col[att]]))
     result[col[att]] = atts[-1] if len(atts) > 0 else 'NA'
-    result[col['o' + att]] = ','.join(str(item) for item in atts[:-1]) if len(atts) > 1 else 'NA'  
+    result[col['o' + att]] = ':'.join(str(item) for item in atts[:-1]) if len(atts) > 1 else 'NA'  
 
   for att in ['srcsite', 'srcroute', 'srclicns']:
     atts = list(row[col[att]] for row in rows if notNA(row[col[att]])) + list(row[col['o' + att]] for row in rows if notNA(row[col['o' + att]]))
     result[col[att]] = atts[0] if len(atts) > 0 else 'NA'
-    result[col['o' + att]] = ','.join(str(item) for item in atts[1:]) if len(atts) > 1 else 'NA'  
+    result[col['o' + att]] = ':'.join(str(item) for item in atts[1:]) if len(atts) > 1 else 'NA'  
 
   return result
 
@@ -92,5 +93,5 @@ def mergeData(data):
 print("start ", datetime.datetime.now())
 newdata = mergeData(data)
 print("end ", datetime.datetime.now())
-print("Saving result into new_data_merge_updated.pkl...")
-pickle.dump(newdata, open('new_data_merge_updated.pkl', 'wb'))
+print("Saving result into " + sys.argv[2] + "...")
+pickle.dump(newdata, open(sys.argv[2], 'wb'))

@@ -1,9 +1,10 @@
 import pickle
+import sys
 
 col = pickle.load(open('col.pkl', 'rb'))
-data = pickle.load(open('notransfer_data_new_proc_ccs.pkl', 'rb'))
+data = pickle.load(open(sys.argv[1], 'rb'))
 
-f = open('notransfer_data_new_proc_ccs.csv', 'w')
+f = open(sys.argv[2], 'w')
 items = list(col.items())
 items.sort(key = lambda item: item[1])
 f.write(','.join(['"' + item[0] + '"' for item in items]) + '\n')

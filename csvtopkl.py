@@ -1,6 +1,7 @@
 import pickle
+import sys
 
-f = open('transfer_old_proc_data.csv', 'r')
+f = open(sys.argv[1], 'r')
 line = f.readline().strip('\n').replace('"', '')
 items = line.split(',')
 
@@ -35,4 +36,4 @@ while (True):
 f.close()
 
 pickle.dump(col, open('col.pkl', 'wb'))
-pickle.dump(data, open('transfer_old_proc_data.pkl', 'wb'))
+pickle.dump(data, open(sys.argv[2], 'wb'))
