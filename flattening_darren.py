@@ -61,7 +61,7 @@ fin.close()
 
 dxCodes = list(validDxCodes)
 dxCodes.sort()
-print('These dxcss codes are valid:' + dxCodes)
+print('These dxcss codes are valid:' + str(dxCodes))
 
 # add DXCSS columns
 count = 0
