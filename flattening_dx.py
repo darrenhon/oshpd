@@ -62,7 +62,7 @@ fin.close()
 # valid dx codes identified
 validDxCodes = list(validDxCodes)
 validDxCodes.sort()
-print('These dxcss codes are valid:' + str(validDxCodes))
+print('These dxccs codes are valid:' + str(validDxCodes))
 
 # add DXCCS columns to col
 for i in validDxCodes:
@@ -97,7 +97,7 @@ while (True):
   for colnum in prcols:
     if notNA(row[colnum]):
       row[colnum] = int(row[colnum])
-  # Add DSCCS values
+  # Add DXCCS values
   dxCodes = [row[colnum] for colnum in dxcols if notNA(row[colnum])];
   for i in validDxCodes:
     if i in dxCodes:
@@ -106,7 +106,7 @@ while (True):
       row.append(0)
   dummy=fout.write(','.join([serialize(item) for item in row]) + '\n')
 
-print("end. Saving file ", datetime.datetime.now())
+print("end.", datetime.datetime.now())
 
 fin.close()
 fout.close()
