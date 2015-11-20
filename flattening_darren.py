@@ -1,9 +1,5 @@
-import pickle
 import sys
-
-fin = open(sys.argv[1], 'r')
-line = fin.readline().strip('\n').replace('"', '')
-items = line.split(',')
+import datetime
 
 def notNA(s):
   return s != 'NA' and s != ''
@@ -33,52 +29,84 @@ def parse(item):
       # it should be an integer, let it throw if it isn't
       return int(item)
 
+# read the input file the first pass to identify valid dxcodes
+fin = open(sys.argv[1], 'r')
+line = fin.readline().strip('\n').replace('"', '')
+items = line.split(',')
+
 # read column names from csv
 col = dict()
 for i in range(len(items)):
-  col[items[i]] = i;
+  col[items[i]] = i + 1;
 
-# read data and add flattened dx codes
-dxcols = [pair for pair in col.items() if pair[0].find('odiag') >= 0 or pair[0] == 'diag_p']
+# read data and identify valid dxcodes
+dxcols = [pair[1] for pair in col.items() if pair[0].find('odiag') >= 0 or pair[0] == 'diag_p']
 validDxCodes = set()
 count = 0
-data = []
 while (True):
   count = count + 1
   if (count % 100000 == 0):
-    print('Reading ' + str(count) + 'row')
+    print('Identifying valid dxCodes ' + str(count) + 'row')
   line = fin.readline()
   if not line:
     break
   items = line.strip('\n').split(',')
   row = [parse(item) for item in items]
-  data.append(row)
   # find dxcodes for this admission
-  dxCodes = [row[pair[1]] for pair in dxcols if notNA(row[pair[1]])] 
-  validDxCodes = validDxCodes.union(dxCodes)
+  for colnum in dxcols:
+    if notNA(row[colnum]):
+      validDxCodes.add(row[colnum])
 
 fin.close()
 
-dxCodes = list(validDxCodes)
-dxCodes.sort()
-print('These dxcss codes are valid:' + str(dxCodes))
+# valid dx codes identified
+validDxCodes = list(validDxCodes)
+validDxCodes.sort()
+print('These dxcss codes are valid:' + str(validDxCodes))
 
-# add DXCSS columns
-count = 0
-for i in dxCodes:
+# add DXCCS columns to col
+for i in validDxCodes:
   count = count + 1
-  print('flattening  ' + str(i * 100.0 / len(dxCodes)) + '%')
   col['DXCCS_' + str(i)] = max(col.values()) + 1
-  for row in data:
-    if i in [row[pair[1]] for pair in dxcols if notNA(row[pair[1]])]:
-      row.append(1)
-    else:
-      row.append(0)
 
-# write column names
+# write column names to output file
 fout = open(sys.argv[2], 'w')
 items = list(col.items())
 items.sort(key = lambda item: item[1])
-fout.write(','.join(['"' + item[0] + '"' for item in items]) + '\n')
-fout.writelines([(','.join([serialize(item) for item in row]) + '\n') for row in data])
+fout.write(','.join([item[0] for item in items]) + '\n')
+
+print("start flattening ", datetime.datetime.now())
+
+# change these proc columns into integer. avoid o_proc_p because it is a colon-separated string
+prcols = [pair[1] for pair in col.items() if pair[0].find('oproc') >= 0 or pair[0] == 'proc_p']
+
+# read the input file 2nd pass to append flattened DXCCS columns
+fin = open(sys.argv[1], 'r')
+line = fin.readline().strip('\n').replace('"', '')
+count = 0
+while (True):
+  count = count + 1
+  if (count % 100000 == 0):
+    print('Flattening ' + str(count) + 'row')
+  line = fin.readline()
+  if not line:
+    break
+  items = line.strip('\n').split(',')
+  row = [parse(item) for item in items]
+  # convert PR into int
+  for colnum in prcols:
+    if notNA(row[colnum]):
+      row[colnum] = int(row[colnum])
+  # Add DSCCS values
+  dxCodes = [row[colnum] for colnum in dxcols if notNA(row[colnum])];
+  for i in validDxCodes:
+    if i in dxCodes:
+      row.append(1)
+    else:
+      row.append(0)
+  dummy=fout.write(','.join([serialize(item) for item in row]) + '\n')
+
+print("end. Saving file ", datetime.datetime.now())
+
+fin.close()
 fout.close()

@@ -1,20 +1,55 @@
-# forgive me for not leaving blank lines in functions
-# I need to test in command line and Python will treat blank lines as end of function
 import datetime
 import itertools
-import pickle
 import sys
+import copy
 
-print("Loading data...")
-data = pickle.load(open(sys.argv[1], 'rb'))
-col = pickle.load(open('col.pkl', 'rb'))
-print("Data loaded")
+# read the first line for column names
+f = open(sys.argv[1], 'r')
+line = f.readline().strip('\n').replace('"', '')
+items = line.split(',')
+
+# convert the column names into a dict
+col = dict()
+for i in range(len(items)):
+  col[items[i]] = i + 1;
+
+def parse(item):
+  if item.find('"') >= 0:
+    # it is a string, possibly a date or empty
+    return item.replace('"', '')
+  elif item == 'NA':
+    # it is NA without double quote
+    return 'NA'
+  elif item.find('.') >= 0:
+    # it is a decimal
+    return float(item)
+  else:
+    # it should be an integer, let it throw if it isn't
+    return int(item)
+
+# read every line, parse it and store each row into data
+data = []
+count=0
+while (True):
+  line = f.readline()
+  if not line:
+    break
+  count = count + 1
+  if count % 100000 == 0:
+    print('Reading ' + str(count) + ' lines')
+  datum=[]
+  for item in line.strip('\n').split(','):
+    datum.append(parse(item));
+  data.append(datum)
+
+f.close()
+
 
 def notNA(s):
   return s != 'NA' and s != ''
 
 def mergeRows(rows):
-  result = rows[0]
+  result = copy.deepcopy(rows[0])
   result[col['charge']] = sum(row[col['charge']] for row in rows)
   result[col['admtdate_Date']] = min(row[col['admtdate_Date']] for row in rows)
   result[col['dschdate_Date']] = max(row[col['dschdate_Date']] for row in rows)
@@ -33,9 +68,8 @@ def mergeRows(rows):
   for row in rows:
     dxCodes=dxCodes.union([row[item[1]] for item in col.items() if item[0].find('odiag') >= 0 and notNA(row[item[1]])])
     prCodes=prCodes.union([row[item[1]] for item in col.items() if item[0].find('oproc') >= 0 and notNA(row[item[1]])])
-    dxCodes=dxCodes.union([row[item[1]] for item in col.items() if item[0].find('diag_p.y') >= 0 and notNA(row[item[1]])])
-    prCodes=prCodes.union([row[item[1]] for item in col.items() if item[0].find('proc_p') >= 0 and notNA(row[item[1]])])
-    
+    dxCodes.add(row[col['diag_p.y']])
+    prCodes.add(row[col['proc_p']])    
 
   dxCodes = list(dxCodes)
   prCodes = list(prCodes)
@@ -91,7 +125,40 @@ def mergeData(data):
   return data
 
 print("start ", datetime.datetime.now())
+
 newdata = mergeData(data)
+data = newdata
+
+# clean empty data
+print("Merge done. Now converting empty proc value into NA")
+for row in data:
+  colnum=col['proc_p']
+  if (row[colnum] == ''):
+    row[colnum] = 'NA'
+  for i in range(1,101):
+    colnum=col['oproc' + str(i)]
+    if (row[colnum] == ''):
+      row[colnum] = 'NA'
+
 print("end ", datetime.datetime.now())
 print("Saving result into " + sys.argv[2] + "...")
-pickle.dump(newdata, open(sys.argv[2], 'wb'))
+
+f = open(sys.argv[2], 'w')
+items = list(col.items())
+items.sort(key = lambda item: item[1])
+f.write(','.join(['"' + item[0] + '"' for item in items]) + '\n')
+
+def serialize(item):
+  if item == 'NA':
+    # it is NA, just return NA without quotes
+    return 'NA'
+  elif isinstance(item, str):
+    # it is a string other than NA, possible empty, add double quotes
+    return '"' + item + '"'
+  else:
+    # it should be an number, convert to str without quotes
+    return str(item)
+
+f.writelines([(','.join([serialize(item) for item in row]) + '\n') for row in data])
+
+f.close()

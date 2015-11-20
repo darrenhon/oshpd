@@ -1,4 +1,3 @@
-import pickle
 import sys
 
 fin = open(sys.argv[1], 'r')
@@ -8,7 +7,7 @@ items = line.split(',')
 # read column names from csv
 col = dict()
 for i in range(len(items)):
-  col[items[i]] = i;
+  col[items[i]] = i + 1;
 
 # add birthyr column
 col['birthyr'] = max(col.values()) + 1
