@@ -11,6 +11,8 @@ items = line.split(',')
 # convert the column names into a dict
 col = dict()
 for i in range(len(items)):
+  # be careful to the input csv. if it contains the empty first column, column number has to be i
+  # if it does not contain empty first column, the column number is i + 1
   col[items[i]] = i + 1;
 
 def parse(item):

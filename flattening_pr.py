@@ -12,7 +12,9 @@ items = line.split(',')
 # read column names from csv
 col = dict()
 for i in range(len(items)):
-  col[items[i]] = i + 1;
+  # be careful to the input csv. if it contains the empty first column, column number has to be i
+  # if it does not contain empty first column, the column number is i + 1
+  col[items[i]] = i;
 
 # read data and identify valid prcodes
 prcols = [pair[1] for pair in col.items() if pair[0].find('oproc') >= 0 or pair[0] == 'proc_p']
