@@ -1,0 +1,283 @@
+CCS Code|Specialties|Clinical Program|Clinical Program Categories
+1|infectious disease, pulmonary|GeneralMedicine|GeneralMedicine
+2|infectious disease|GeneralMedicine|GeneralMedicine
+3|infectious disease|GeneralMedicine|Oncology
+4|infectious disease|GeneralMedicine|Muskuloskeletal
+5|infectious disease|GeneralMedicine|Respiratory
+6|infectious disease, gastrointestinal|GeneralMedicine|Neurosciences
+7|infectious disease|GeneralMedicine|Cardiovascular
+8|infectious disease|GeneralMedicine|Surgery
+9|infectious disease|GeneralMedicine|Pediatrics
+10|infectious disease|GeneralMedicine|Gastrointestinal
+11|oncology|Oncology|WomenAndNewborns
+12|oncology|Oncology|Other
+13|oncology|Oncology|BehaviorHealth
+14|oncology|Oncology|
+15|oncology|Oncology|
+16|oncology|Oncology|
+17|oncology|Oncology|
+18|oncology|Oncology|
+19|oncology|Oncology|
+20|oncology|Oncology|
+21|oncology|Oncology|
+22|oncology|Oncology|
+23|oncology|Oncology|
+24|oncology|Oncology|
+25|oncology|Oncology|
+26|oncology|Oncology|
+27|oncology|Oncology|
+28|oncology|Oncology|
+29|oncology|Oncology|
+30|oncology|Oncology|
+31|oncology|Oncology|
+32|oncology|Oncology|
+33|oncology|Oncology|
+34|oncology|Oncology|
+35|oncology|Oncology|
+36|oncology|Oncology|
+37|oncology|Oncology|
+38|oncology|Oncology|
+39|oncology|Oncology|
+40|oncology|Oncology|
+41|oncology|Oncology|
+42|oncology|Oncology|
+43|oncology|Oncology|
+44|oncology|Oncology|
+45|oncology|Oncology|
+46|oncology|Oncology|
+47|oncology|Oncology|
+48|endocrinology, medicine genetics|GeneralMedicine|
+49|endocrinology|GeneralMedicine|
+50|endocrinology|GeneralMedicine|
+51|endocrinology|GeneralMedicine|
+52|critical care medicine|GeneralMedicine|
+53|endocrinology|GeneralMedicine|
+54|rheumatology|Muskuloskeletal|
+55|endocrinology|GeneralMedicine|
+56|medical genetics, pulmonology|Respiratory|
+57|immunology|GeneralMedicine|
+58|endocrinology|GeneralMedicine|
+59|hematology|Oncology|
+60|hematology|Oncology|
+61|hematology|Oncology|
+62|hematology|Oncology|
+63|hematology|Oncology|
+64|hematology|Oncology|
+76|neurology|Neurosciences|
+77|neurology|Neurosciences|
+78|neurology|Neurosciences|
+79|neurology|Neurosciences|
+80|neurology|Neurosciences|
+81|neurology|Neurosciences|
+82|neurology|Neurosciences|
+83|neurology|Neurosciences|
+84|neurology|Neurosciences|
+85|neurology|Neurosciences|
+86|ophthalmology|GeneralMedicine|
+87|ophthalmology|GeneralMedicine|
+88|ophthalmology|GeneralMedicine|
+89|ophthalmology|GeneralMedicine|
+90|ophthalmology|GeneralMedicine|
+91|ophthalmology|GeneralMedicine|
+92|otorhinolaryngology|GeneralMedicine|
+93|otorhinolaryngology|GeneralMedicine|
+94|otorhinolaryngology|GeneralMedicine|
+95|neurology|Neurosciences|
+96|cardiology|Cardiovascular|
+97|cardiology|Cardiovascular|
+98|cardiology|Cardiovascular|
+99|cardiology|Cardiovascular|
+100|cardiology|Cardiovascular|
+101|cardiology|Cardiovascular|
+102|cardiology|Cardiovascular|
+103|pulmonary|Cardiovascular|
+104|cardiology|Cardiovascular|
+105|cardiology|Cardiovascular|
+106|cardiology|Cardiovascular|
+107|cardiology|Cardiovascular|
+108|cardiology|Cardiovascular|
+109|cardiology|Cardiovascular|
+110|unknown|Cardiovascular|
+111|unknown|Cardiovascular|
+112|neurology, cardiology|Cardiovascular|
+113|unknown|Cardiovascular|
+114|cardiology|Cardiovascular|
+115|vascular surgery|Surgery|
+116|vascular surgery|Surgery|
+117|unknown|Cardiovascular|
+118|emergency medicine|GeneralMedicine|
+119|plastic surgery|Surgery|
+120|general surgery|Surgery|
+121|general surgery|Surgery|
+122|pulmonary|Respiratory|
+123|infectious disease|Respiratory|
+124|infectious disease|Respiratory|
+125|infectious disease, pulmonary|Respiratory|
+126|infectious disease|Respiratory|
+127|pulmonary|Respiratory|
+128|pulmonary|Respiratory|
+129|pediatrics|Pediatrics|
+130|pulmonary|Respiratory|
+131|pulmonary|Respiratory|
+132|pulmonary|Respiratory|
+133|pulmonary|Respiratory|
+134|pulmonary|Respiratory|
+135|infectious disease|GeneralMedicine|
+136|unknown|GeneralMedicine|
+137|unknown|GeneralMedicine|
+138|gastroenterology|Gastrointestinal|
+139|gastroenterology, general surgery|Gastrointestinal|
+140|gastroenterology|Gastrointestinal|
+141|unknown|Gastrointestinal|
+142|general surgery|Surgery|
+143|general surgery|Surgery|
+144|gastroenterology|Gastrointestinal|
+145|general surgery|Surgery|
+146|general surgery|Surgery|
+147|gastroenterology|Gastrointestinal|
+148|general surgery|Surgery|
+149|unknown|Gastrointestinal|
+151|gastroenterology|Gastrointestinal|
+152|gastroenterology|Gastrointestinal|
+153|gastroenterology|Gastrointestinal|
+154|gastroenterology|Gastrointestinal|
+155|gastroenterology|Gastrointestinal|
+156|nephrology|GeneralMedicine|
+157|nephrology|GeneralMedicine|
+158|urology|GeneralMedicine|
+159|infectious disease|GeneralMedicine|
+160|urology|GeneralMedicine|
+161|urology|GeneralMedicine|
+162|medical genetics|GeneralMedicine|
+163|urology|GeneralMedicine|
+164|urology|GeneralMedicine|
+165|urology|GeneralMedicine|
+166|urology|GeneralMedicine|
+167|unknown|WomenAndNewborns|
+168|unknown|WomenAndNewborns|
+169|gynecology|WomenAndNewborns|
+170|gynecology|WomenAndNewborns|
+171|gynecology|WomenAndNewborns|
+172|gynecology|WomenAndNewborns|
+173|gynecology|WomenAndNewborns|
+174|gynecology|WomenAndNewborns|
+175|gynecology|WomenAndNewborns|
+176|gynecology|WomenAndNewborns|
+177|obstetrics, gynecology|WomenAndNewborns|
+178|obstetrics, gynecology|WomenAndNewborns|
+179|obstetrics, gynecology|WomenAndNewborns|
+180|obstetrics, gynecology|WomenAndNewborns|
+181|obstetrics|WomenAndNewborns|
+182|emergency medicine|WomenAndNewborns|
+183|obstetrics|WomenAndNewborns|
+184|obstetrics|WomenAndNewborns|
+185|obstetrics|WomenAndNewborns|
+186|obstetrics|WomenAndNewborns|
+187|gynecology|WomenAndNewborns|
+188|gynecology|WomenAndNewborns|
+189|unknown|WomenAndNewborns|
+190|obstetrics|WomenAndNewborns|
+191|obstetrics|WomenAndNewborns|
+192|obstetrics|WomenAndNewborns|
+193|obstetrics|WomenAndNewborns|
+194|obstetrics|WomenAndNewborns|
+195|obstetrics|WomenAndNewborns|
+196|obstetrics|WomenAndNewborns|
+197|infectious disease, dermatology|GeneralMedicine|
+198|dermatology|GeneralMedicine|
+199|unknown|GeneralMedicine|
+200|dermatology|GeneralMedicine|
+201|infectious disease, orthopedics|GeneralMedicine|
+202|rheumatology|Muskuloskeletal|
+203|rheumatology, orthopedics|Muskuloskeletal|
+204|rheumatology|Muskuloskeletal|
+205|neurosurgery, orthopedics|Surgery|
+206|rheumatology|Muskuloskeletal|
+207|unknown|GeneralMedicine|
+208|unknown|GeneralMedicine|
+209|unknown|GeneralMedicine|
+210|rheumatology|Muskuloskeletal|
+211|unknown|GeneralMedicine|
+212|medical genetics|GeneralMedicine|
+213|cardiology, medical genetics|Cardiovascular|
+214|medical genetics|GeneralMedicine|
+215|urology, gynecology, medical genetics|GeneralMedicine|
+216|neurology, medical genetics|Neurosciences|
+217|medical genetics|GeneralMedicine|
+218|pediatrics|Pediatrics|
+219|pediatrics|Pediatrics|
+220|pediatrics|Pediatrics|
+221|pediatrics|Pediatrics|
+222|pediatrics|Pediatrics|
+223|pediatrics|Pediatrics|
+224|pediatrics|Pediatrics|
+225|rheumatology|Muskuloskeletal|
+226|orthopedics|GeneralMedicine|
+227|neurosurgery|Surgery|
+228|orthopedics|GeneralMedicine|
+229|orthopedics|GeneralMedicine|
+230|orthopedics|GeneralMedicine|
+231|orthopedics|GeneralMedicine|
+232|sports medicine|Other|
+233|neurosurgery|Surgery|
+234|unknown|GeneralMedicine|
+235|emergency medicine|GeneralMedicine|
+236|emergency medicine|GeneralMedicine|
+237|emergency medicine|GeneralMedicine|
+238|unknown|GeneralMedicine|
+239|emergency medicine|GeneralMedicine|
+240|critical care medicine|GeneralMedicine|
+241|unknown|GeneralMedicine|
+242|unknown|GeneralMedicine|
+243|unknown|GeneralMedicine|
+244|unknown|GeneralMedicine|
+245|neurology, cardiology|Neurosciences|
+246|infectious disease|GeneralMedicine|
+247|infectious disease|GeneralMedicine|
+248|infectious disease, general surgery|Surgery|
+249|cardiology, critical care medicine|Cardiovascular|
+250|gastroenterology|Gastrointestinal|
+251|general surgery|Surgery|
+252|unknown|GeneralMedicine|
+253|immunology|GeneralMedicine|
+254|unknown|GeneralMedicine|
+255|unknown|GeneralMedicine|
+256|unknown|GeneralMedicine|
+257|unknown|GeneralMedicine|
+258|unknown|GeneralMedicine|
+259|unclassified|Other|
+650|psychiatry|BehaviorHealth|
+651|psychiatry|BehaviorHealth|
+652|psychiatry|BehaviorHealth|
+653|psychiatry|BehaviorHealth|
+654|psychiatry|BehaviorHealth|
+655|unknown|BehaviorHealth|
+656|psychiatry|BehaviorHealth|
+657|psychiatry|BehaviorHealth|
+658|psychiatry|BehaviorHealth|
+659|psychiatry|BehaviorHealth|
+660|psychiatry|BehaviorHealth|
+661|psychiatry|BehaviorHealth|
+662|psychiatry|BehaviorHealth|
+663|psychiatry|BehaviorHealth|
+670|psychiatry|BehaviorHealth|
+2601|N/A|N/A|
+2602|N/A|N/A|
+2603|N/A|N/A|
+2604|N/A|N/A|
+2605|N/A|N/A|
+2606|N/A|N/A|
+2607|N/A|N/A|
+2608|N/A|N/A|
+2609|N/A|N/A|
+2610|N/A|N/A|
+2611|N/A|N/A|
+2612|N/A|N/A|
+2613|N/A|N/A|
+2614|N/A|N/A|
+2615|N/A|N/A|
+2617|N/A|N/A|
+2618|N/A|N/A|
+2619|N/A|N/A|
+2620|N/A|N/A|
+2621|N/A|N/A|
