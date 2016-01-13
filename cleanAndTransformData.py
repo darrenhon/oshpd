@@ -5,6 +5,21 @@ import copy
 def notNA(s):
   return s != ''
 
+def parseClinicalProgramMapping(path):
+  fin = open(path, 'r')
+  result = dict()
+  # skip first line
+  line = fin.readline()
+  while (True):
+    line = fin.readline()
+    if not line:
+      break
+    items = line.strip().split('|')
+    if items[2] != 'N/A':
+      result[items[0]] = 'cp_' + items[2]
+  fin.close()
+  return result
+
 def parseComorbidityMapping(path, dxmap):
   fin = open(path, 'r')
   allDx = sorted(dxmap.keys())
@@ -157,12 +172,13 @@ def mergeRows(rows, odxcols, oprcols):
 
   return result
 
-def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap):
+def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap, cpmap):
   # nothing to process
   if len(sameRlnRows) == 0:
     return
   sex, racegrp, birthyr = getSexRacegrpBirthyr(sameRlnRows, col)
   allcom = set(commap.values())
+  ccscols = [item[1] for item in col.items() if item[0].find('CCS') >= 0]
   # merge transfers
   i = 0
   while i < len(sameRlnRows):
@@ -179,7 +195,7 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
       sameRlnRows.insert(i, row)
     else:
       i = i + 1
-  # fix inconsistencies, construct response variable, create comorbidities, clinical programs, convert to CCS, flatten attributes
+  # fix inconsistencies, construct response variable, create comorbidities, flatten icd9 into ccs and clinical programs columns
   for i in range(len(sameRlnRows)):
     # fix inconsistencies
     row = sameRlnRows[i]
@@ -187,7 +203,7 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
     row[col['race_grp']] = racegrp
     row[col['birthyr']] = str(birthyr)
     # construct response variable
-    row[col['30daysreadmt']] = '0'
+    row[col['thirtyday']] = '0'
     if i < len(sameRlnRows) - 1:
       dschdate = datetime.datetime.strptime(sameRlnRows[i][col['dschdate_Date']], '%m/%d/%Y')
       nextadmtdate = datetime.datetime.strptime(sameRlnRows[i + 1]['admtdate_Date'], '%m/%d/%Y')
@@ -195,7 +211,7 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
       if days <= 0:
         print('Merge failed: ' + str(row))
       elif days <= 30:
-        row[col['30daysreadmt']] = '1'
+        row[col['thirtyday']] = '1'
     # create comorbidities by finding all odiag of previous records
     for com in allcom:
       row[col[com]] = '0'
@@ -204,8 +220,18 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
         icd9 = row[colnum]
         if icd9 != '' and icd9 in commap:
           row[commap[icd9]] = '1'
-    # create clinical programs
-    # flattening
+    # flatten into CCS columns and mark clinical programs
+    row['DXCCS_' + dxmap[row[col['diag_p']]]] = '1'
+    row['PRCCS_' + prmap[row[col['proc_p']]]] = '1'
+    for ccscol in ccscols:
+      row[ccscol] = '0'
+    for prcol in oprcols:
+      row['PRCCS_' + prmap[row[prcol]]] = '1'
+    for dxcol in odxcols:
+      dxccs = dxmap[row[dxcol]]
+      row['DXCCS_' + dxccs] = '1'
+      if dxccs in cpmap:
+        row[cpmap[dxccs]] = '1'
     # delete the columns in the final step
     for num in delcolsnum:
       del row[num]
@@ -229,13 +255,15 @@ def processFiles(fin, fout):
   dxmap = parseICD9Mapping('AppendixASingleDX.txt')
   prmap = parseICD9Mapping('AppendixBSinglePR.txt')
   commap = parseComorbidityMapping('modified_comformat2012-2015.txt', dxmap)
+  cpmap = parseClinicalProgramMapping('CCS_to_ClinicalProgram.csv')
   # columns to be added
-  newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', '30daysreadmt']
+  newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday']
   newcols.extend(['odiag%d' % i for i in range(25, 101)])
   newcols.extend(['oproc%d' % i for i in range(21, 101)])
   newcols.extend(sorted(['DXCCS_' + dxccs for dxccs in set(dxmap.values())]))
   newcols.extend(sorted(['PRCCS_' + dxccs for dxccs in set(prmap.values())]))
   newcols.extend(sorted(set(commap.values())))
+  newcols.extend(sorted(set(cpmap.values())))
   addColumns(col, newcols)
   odxcols = [pair[1] for pair in col.items() if pair[0].find('odiag') >= 0]
   oprcols = [pair[1] for pair in col.items() if pair[0].find('oproc') >= 0]
@@ -250,13 +278,13 @@ def processFiles(fin, fout):
     line = fin.readline()
     process = False
     if not line:
-      processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap)
+      processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap, cpmap)
       fout.writelines([','.join([item for item in row]) + '\n' for row in sameRlnRows])
       break
     row = line.strip('\n').split(',')
     row.extend([''] * len(newcols))
     if (currentRln != row[col['rln']]):
-      processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap)
+      processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, commap, cpmap)
       fout.writelines([','.join([item for item in row]) + '\n' for row in sameRlnRows])
       sameRlnRows.clear()
       currentRln = row[col['rln']]
