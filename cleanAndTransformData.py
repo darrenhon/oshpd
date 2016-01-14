@@ -20,7 +20,23 @@ def parseClinicalProgramMapping(path):
   fin.close()
   return result
 
-def parseComorbidityMapping(path, dxmap):
+def parseCharlsonComorbidityMapping(path, dxmap):
+  fin = open(path, 'r')
+  allDx = sorted(dxmap.keys())
+  result = dict()
+  # skip the first line
+  line = fin.readline()
+  while (True):
+    line = fin.readline()
+    if not line:
+      break
+    items = line.strip().split('|')
+    for icd9 in items[2].replace(' ', '').split(','):
+
+  fin.close()
+  return result
+
+def parseElixhauserComorbidityMapping(path, dxmap):
   fin = open(path, 'r')
   allDx = sorted(dxmap.keys())
   result = dict()
@@ -48,7 +64,7 @@ def parseComorbidityMapping(path, dxmap):
       if len(equals) > 1:
         comorb = equals[1].split('"')[1]
         for icd9 in icd9s:
-          result[icd9] = comorb
+          result[icd9] = 'el_com_' + comorb
         icd9s.clear()
   fin.close()
   return result
@@ -250,11 +266,11 @@ def addColumns(col, newcols):
 def processFiles(fin, fout):
   col = getColumns(fin.readline().strip('\n').replace('"', ''))
   # columns to be deleted
-  delcols = [key in col.keys() if key.contains('ecode') or key.contains('poa') or key.contains('procdy')]
+  delcols = [key in col.keys() if key.contains('ecode') or key.contains('procdy')]
   delcolsnum = sorted([item[1] for item in col.items() if item[0] in delcols], reverse = True)
   dxmap = parseICD9Mapping('AppendixASingleDX.txt')
   prmap = parseICD9Mapping('AppendixBSinglePR.txt')
-  commap = parseComorbidityMapping('modified_comformat2012-2015.txt', dxmap)
+  commap = parseElixhauserComorbidityMapping('modified_comformat2012-2015.txt', dxmap)
   cpmap = parseClinicalProgramMapping('CCS_to_ClinicalProgram.csv')
   # columns to be added
   newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday']

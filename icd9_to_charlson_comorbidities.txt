@@ -1,0 +1,18 @@
+/* Quan, Hude, et al. "Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data." Medical care (2005): 1130-1139. */
+myocardial|Myocardial infarction|410.x, 412.x
+chf|Congestive heart failure|398.91, 402.01, 402.11, 402.91, 404.01, 404.03, 404.11, 404.13, 404.91, 404.93 , 425.4 - 425.9 , 428.x
+peripheral|Peripheral vascular disease|093.0, 437.3, 440.x, 441.x, 443.1 - 443.9 , 447.1, 557.1, 557.9, V43.4
+cerebro|Cerebrovascular disease|362.34, 430.x - 438.x
+dementia|Dementia|290.x, 294.1, 331.2
+copd|Chronic pulmonary disease|416.8, 416.9, 490.x - 505.x, 506.4, 508.1, 508.8
+rheumatic|Rheumatic disease|446.5, 710.0 - 710.4, 714.0 - 714.2, 714.8, 725.x
+peptic_ulcer|Peptic ulcer disease|531.x - 534.x
+liver_disease|Mild liver disease|070.22, 070.23, 070.32, 070.33, 070.44, 070.54, 070.6, 070.9, 570.x, 571.x, 573.3, 573.4, 573.8, 573.9, V42.7
+uncomp_diabetes|Diabetes without chronic complication|250.0 - 250.3, 250.8, 250.9
+comp_diabetes|Diabetes with chronic complication|250.4 - 250.7
+paralysis|Hemiplegia or paraplegia|334.1, 342.x, 343.x, 344.0 - 344.6, 344.9
+renal_fail|Renal disease|403.01, 403.11, 403.91, 404.02, 404.03, 404.12, 404.13, 404.92, 404.93, 582.x, 583.0 - 583.7, 585.x, 586.x, 588.0, V42.0, V45.1, V56.x
+cancer|Any malignancy, including lymphoma and leukemia, except malignant neoplasm of skin|140.x - 172.x, 174.x - 195.8, 200.x - 208.x, 238.6
+sev_liver_disease|Moderate or severe liver disease|456.0 - 456.2, 572.2 - 572.8
+solid_tumor|Metastatic solid tumor|196.x - 199.x
+hiv_aids|AIDS/HIV|042.x - 044.x
