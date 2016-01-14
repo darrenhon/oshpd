@@ -1,4 +1,5 @@
-/* Quan, Hude, et al. "Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data." Medical care (2005): 1130-1139. */
+/* Quan, Hude, et al. "Coding algorithms for defining comorbidities in ICD-9-CM and ICD-10 administrative data." Medical care (2005): 1130-1139. 
+The mapping is straight forward except renal_fail -> Renal disease*/
 myocardial|Myocardial infarction|410.x, 412.x
 chf|Congestive heart failure|398.91, 402.01, 402.11, 402.91, 404.01, 404.03, 404.11, 404.13, 404.91, 404.93 , 425.4 - 425.9 , 428.x
 peripheral|Peripheral vascular disease|093.0, 437.3, 440.x, 441.x, 443.1 - 443.9 , 447.1, 557.1, 557.9, V43.4
