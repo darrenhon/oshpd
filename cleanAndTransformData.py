@@ -26,6 +26,7 @@ def parseCharlsonComorbidityMapping(path, dxmap):
   result = dict()
   # skip the first line
   line = fin.readline()
+  line = fin.readline()
   while (True):
     line = fin.readline()
     if not line:
@@ -165,29 +166,25 @@ def getSexRacegrpBirthyr(sameRlnRows, col):
 def getDate(dateStr):
   return datetime.datetime.strptime(dateStr, '%m/%d/%Y')
 
-def mergeRows(rows, odxcols, oprcols):
+def mergeRows(rows, col, odxcols, oprcols):
   result = copy.deepcopy(rows[0])
   result[col['charge']] = str(sum(float(row[col['charge']]) for row in rows))
-  result[col['admtdate_Date']] = min(getDate(row[col['admtdate_Date']]) for row in rows).strftime('%m/%d/%Y')
-  result[col['dschdate_Date']] = max(getDate(row[col['dschdate_Date']]) for row in rows).strftime('%m/%d/%Y')
-
-  result[col['los_adj']] = (getDate(result[col['dschdate_Date']]) - getDate(result[col['admtdate_Date']])).days
+  result[col['admtdate']] = min(getDate(row[col['admtdate']]) for row in rows).strftime('%m/%d/%Y')
+  result[col['dschdate']] = max(getDate(row[col['dschdate']]) for row in rows).strftime('%m/%d/%Y')
+  result[col['los_adj']] = str((getDate(result[col['dschdate']]) - getDate(result[col['admtdate']])).days)
   result[col['disp']] = rows[-1][col['disp']]
-
   dxCodes = set()
   prCodes = set()
   for row in rows:
-    dxCodes=dxCodes.union([row[colnum] for colnum in odxcols and notNA(row[colnum])])
-    prCodes=prCodes.union([row[colnum] for colnum in oprcols and notNA(row[colnum])])
+    dxCodes=dxCodes.union([row[colnum] for colnum in odxcols if notNA(row[colnum])])
+    prCodes=prCodes.union([row[colnum] for colnum in oprcols if notNA(row[colnum])])
     dxCodes.add(row[col['diag_p']])
     prCodes.add(row[col['proc_p']])
-
   dxCodes = list(dxCodes)
   prCodes = list(prCodes)
   for i in range(100):
-    result[col['odiag%d' % (i + 1),] = dxCodes[i] if i < len(dxCodes) else ''
+    result[col['odiag%d' % (i + 1)]] = dxCodes[i] if i < len(dxCodes) else ''
     result[col['oproc%d' % (i + 1)]] = prCodes[i] if i < len(prCodes) else ''
-
   # merge primary diag
   diag_p = list(row[col['o_diag_p']] for row in rows if notNA(row[col['o_diag_p']])) + list(row[col['diag_p']] for row in rows if notNA(row[col['diag_p']]))
   result[col['diag_p']] = diag_p[-1] if len(diag_p) > 0 else ''
@@ -196,25 +193,24 @@ def mergeRows(rows, odxcols, oprcols):
   proc_p = list(row[col['o_proc_p']] for row in rows if notNA(row[col['o_proc_p']])) + list(row[col['proc_p']] for row in rows if notNA(row[col['proc_p']]))
   result[col['proc_p']] = proc_p[-1] if len(proc_p) > 0 else ''
   result[col['o_proc_p']] = ':'.join(str(proc) for proc in proc_p[:-1]) if len(proc_p) > 1 else ''
-  
   # typcare and sev_code need the latest admit
   # src columns need the earliest admit
   for att in ['typcare', 'sev_code']:
     atts = list(row[col['o' + att]] for row in rows if notNA(row[col['o' + att]])) + list(row[col[att]] for row in rows if notNA(row[col[att]]))
     result[col[att]] = atts[-1] if len(atts) > 0 else ''
     result[col['o' + att]] = ':'.join(str(item) for item in atts[:-1]) if len(atts) > 1 else ''  
-
   for att in ['srcsite', 'srcroute', 'srclicns']:
     atts = list(row[col[att]] for row in rows if notNA(row[col[att]])) + list(row[col['o' + att]] for row in rows if notNA(row[col['o' + att]]))
     result[col[att]] = atts[0] if len(atts) > 0 else ''
     result[col['o' + att]] = ':'.join(str(item) for item in atts[1:]) if len(atts) > 1 else ''
-
   return result
 
 def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, elcommap, chcommap, cpmap):
   # nothing to process
   if len(sameRlnRows) == 0:
     return
+  # my fault. the admtdate is not corretly sorted within each rln when exporting from sql table to csv
+  sameRlnRows.sort(key = lambda row: getDate(row[col['admtdate']]))
   sex, racegrp, birthyr = getSexRacegrpBirthyr(sameRlnRows, col)
   allelcom = set(elcommap.values())
   allchcom = set(chcommap.values())
@@ -224,13 +220,15 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
   while i < len(sameRlnRows):
     j = i
     while j < len(sameRlnRows) - 1:
-      dschdate = datetime.datetime.strptime(sameRlnRows[j][col['dschdate_Date']], '%m/%d/%Y')
-      nextadmtdate = datetime.datetime.strptime(sameRlnRows[j + 1][col['admtdate_Date']], '%m/%d/%Y')
+      dschdate = datetime.datetime.strptime(sameRlnRows[j][col['dschdate']], '%m/%d/%Y')
+      nextadmtdate = datetime.datetime.strptime(sameRlnRows[j + 1][col['admtdate']], '%m/%d/%Y')
       if nextadmtdate <= dschdate:
         j = j + 1
+      else:
+        break
     if i != j:
       # merge and continue without changing i
-      row = mergeRows(sameRlnRows[i:j+1], odxcols, oprcols)
+      row = mergeRows(sameRlnRows[i:j+1], col, odxcols, oprcols)
       del sameRlnRows[i:j+1]
       sameRlnRows.insert(i, row)
     else:
@@ -245,46 +243,39 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
     # construct response variable
     row[col['thirtyday']] = '0'
     if i < len(sameRlnRows) - 1:
-      dschdate = datetime.datetime.strptime(sameRlnRows[i][col['dschdate_Date']], '%m/%d/%Y')
-      nextadmtdate = datetime.datetime.strptime(sameRlnRows[i + 1]['admtdate_Date'], '%m/%d/%Y')
+      dschdate = getDate(sameRlnRows[i][col['dschdate']])
+      nextadmtdate = getDate(sameRlnRows[i + 1][col['admtdate']])
       days = (nextadmtdate - dschdate).days
       if days <= 0:
         print('Merge failed: ' + str(row))
       elif days <= 30:
         row[col['thirtyday']] = '1'
     # create comorbidities by finding all odiag of previous records
-    for com in allelcom | allchcom:
-      row[col[com]] = '0'
+    #for com in allelcom | allchcom:
+    #  row[col[com]] = '0'
     for j in range(0, i):
       for colnum in odxcols:
         icd9 = row[colnum]
         if icd9 != '':
           if icd9 in elcommap:
-            row[elcommap[icd9]] = '1'
+            row[col[elcommap[icd9]]] = '1'
           if icd9 in chcommap:
-            row[chcommap[icd9]] = '1'
+            row[col[chcommap[icd9]]] = '1'
     # flatten into CCS columns and mark clinical programs
-    row['DXCCS_' + dxmap[row[col['diag_p']]]] = '1'
-    row['PRCCS_' + prmap[row[col['proc_p']]]] = '1'
-    for ccscol in ccscols:
-      row[ccscol] = '0'
+    row[col['DXCCS_' + dxmap[row[col['diag_p']]]]] = '1'
+    row[col['PRCCS_' + prmap[row[col['proc_p']]]]] = '1'
+    #for ccscol in ccscols:
+    #  row[ccscol] = '0'
     for prcol in oprcols:
-      row['PRCCS_' + prmap[row[prcol]]] = '1'
+      row[col['PRCCS_' + prmap[row[prcol]]]] = '1'
     for dxcol in odxcols:
       dxccs = dxmap[row[dxcol]]
-      row['DXCCS_' + dxccs] = '1'
+      row[col['DXCCS_' + dxccs]] = '1'
       if dxccs in cpmap:
-        row[cpmap[dxccs]] = '1'
+        row[col[cpmap[dxccs]]] = '1'
     # delete the columns in the final step
     for num in delcolsnum:
       del row[num]
-
-def convertDxPrCodes(row, dxcols, prcols, dxmap, prmap):
-  for dxcol in dxcols:
-    row[dxcol] = dxmap[row[dxcol]]
-  for prcol in prcols:
-    row[prcol] = prmap[row[prcol]]
-  return row
 
 def addColumns(col, newcols):
   for newcol in newcols:
@@ -293,7 +284,7 @@ def addColumns(col, newcols):
 def processFiles(fin, fout):
   col = getColumns(fin.readline().strip('\n').replace('"', ''))
   # columns to be deleted
-  delcols = [key in col.keys() if key.contains('ecode') or key.contains('procdy')]
+  delcols = [key for key in col.keys() if 'ecode' in key or 'procdy' in key]
   delcolsnum = sorted([item[1] for item in col.items() if item[0] in delcols], reverse = True)
   dxmap = parseICD9Mapping('AppendixASingleDX.txt')
   prmap = parseICD9Mapping('AppendixBSinglePR.txt')
