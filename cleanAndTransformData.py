@@ -182,7 +182,11 @@ def mergeRows(rows, col, odxcols, oprcols):
     prCodes.add(row[col['proc_p']])
   dxCodes = list(dxCodes)
   prCodes = list(prCodes)
-  for i in range(100):
+  if len(dxCodes) > 250:
+    print('dxCodes > 250. rln:' + str(result[col['rln']]))
+  if len(prCodes) > 250:
+    print('prCodes > 250. rln:' + str(result[col['rln']]))
+  for i in range(250):
     result[col['odiag%d' % (i + 1)]] = dxCodes[i] if i < len(dxCodes) else ''
     result[col['oproc%d' % (i + 1)]] = prCodes[i] if i < len(prCodes) else ''
   # merge primary diag
@@ -293,8 +297,8 @@ def processFiles(fin, fout):
   cpmap = parseClinicalProgramMapping('CCS_to_ClinicalProgram.csv')
   # columns to be added
   newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday']
-  newcols.extend(['odiag%d' % i for i in range(25, 101)])
-  newcols.extend(['oproc%d' % i for i in range(21, 101)])
+  newcols.extend(['odiag%d' % i for i in range(25, 251)])
+  newcols.extend(['oproc%d' % i for i in range(21, 251)])
   newcols.extend(sorted(['DXCCS_' + dxccs for dxccs in set(dxmap.values())]))
   newcols.extend(sorted(['PRCCS_' + dxccs for dxccs in set(prmap.values())]))
   newcols.extend(sorted(set(elcommap.values())))
