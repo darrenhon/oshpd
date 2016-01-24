@@ -2,6 +2,9 @@ import sys
 import datetime
 import copy
 
+ODIAG_COLS = 156
+OPROC_COLS = 48
+
 def notNA(s):
   return s != ''
 
@@ -24,7 +27,7 @@ def parseCharlsonComorbidityMapping(path, dxmap):
   fin = open(path, 'r')
   allDx = sorted(dxmap.keys())
   result = dict()
-  # skip the first line
+  # skip the first 2 lines
   line = fin.readline()
   line = fin.readline()
   while (True):
@@ -182,12 +185,13 @@ def mergeRows(rows, col, odxcols, oprcols):
     prCodes.add(row[col['proc_p']])
   dxCodes = list(dxCodes)
   prCodes = list(prCodes)
-  if len(dxCodes) > 250:
-    print('dxCodes > 250. rln:' + str(result[col['rln']]))
-  if len(prCodes) > 250:
-    print('prCodes > 250. rln:' + str(result[col['rln']]))
-  for i in range(250):
+  if len(dxCodes) > ODIAG_COLS:
+    print('dxCodes > ' + str(ODIAG_COLS) + '. rln:' + str(result[col['rln']]))
+  if len(prCodes) > OPROC_COLS:
+    print('prCodes > ' + str(OPROC_COLS) + '. rln:' + str(result[col['rln']]))
+  for i in range(ODIAG_COLS):
     result[col['odiag%d' % (i + 1)]] = dxCodes[i] if i < len(dxCodes) else ''
+  for i in range(OPROC_COLS):
     result[col['oproc%d' % (i + 1)]] = prCodes[i] if i < len(prCodes) else ''
   # merge primary diag
   diag_p = list(row[col['o_diag_p']] for row in rows if notNA(row[col['o_diag_p']])) + list(row[col['diag_p']] for row in rows if notNA(row[col['diag_p']]))
@@ -250,6 +254,7 @@ def processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, pr
       dschdate = getDate(sameRlnRows[i][col['dschdate']])
       nextadmtdate = getDate(sameRlnRows[i + 1][col['admtdate']])
       days = (nextadmtdate - dschdate).days
+      row[col['days_to_next_admt']] = str(days)
       if days <= 0:
         print('Merge failed: ' + str(row))
       elif days <= 30:
@@ -296,9 +301,9 @@ def processFiles(fin, fout):
   chcommap = parseCharlsonComorbidityMapping('icd9_to_charlson_comorbidities.txt', dxmap)
   cpmap = parseClinicalProgramMapping('CCS_to_ClinicalProgram.csv')
   # columns to be added
-  newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday']
-  newcols.extend(['odiag%d' % i for i in range(25, 251)])
-  newcols.extend(['oproc%d' % i for i in range(21, 251)])
+  newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday', 'days_to_next_admt']
+  newcols.extend(['odiag%d' % i for i in range(25, ODIAG_COLS + 1)])
+  newcols.extend(['oproc%d' % i for i in range(21, OPROC_COLS + 1)])
   newcols.extend(sorted(['DXCCS_' + dxccs for dxccs in set(dxmap.values())]))
   newcols.extend(sorted(['PRCCS_' + dxccs for dxccs in set(prmap.values())]))
   newcols.extend(sorted(set(elcommap.values())))
