@@ -290,10 +290,19 @@ def addColumns(col, newcols):
   for newcol in newcols:
     col[newcol] = max(col.values()) + 1
 
+def writeLines(col, fout, rows, eid):
+  for row in rows:
+    row[col['e_id']] = str(eid)
+    eid = eid + 1
+    dummy = fout.write(','.join([item for item in row]) + '\n')
+  return eid
+
 def processFiles(fin, fout):
   col = getColumns(fin.readline().strip('\n').replace('"', ''))
   # columns to be deleted
-  delcols = [key for key in col.keys() if 'ecode' in key or 'procdy' in key]
+  # keep these columns for now
+  # delcols = [key for key in col.keys() if 'ecode' in key or 'procdy' in key]
+  delcols = []
   delcolsnum = sorted([item[1] for item in col.items() if item[0] in delcols], reverse = True)
   dxmap = parseICD9Mapping('AppendixASingleDX.txt')
   prmap = parseICD9Mapping('AppendixBSinglePR.txt')
@@ -301,11 +310,11 @@ def processFiles(fin, fout):
   chcommap = parseCharlsonComorbidityMapping('icd9_to_charlson_comorbidities.txt', dxmap)
   cpmap = parseClinicalProgramMapping('CCS_to_ClinicalProgram.csv')
   # columns to be added
-  newcols = ['birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday', 'days_to_next_admt']
+  newcols = ['e_id', 'birthyr', 'o_diag_p', 'o_proc_p', 'otypcare', 'osev_code', 'osrcsite', 'osrcroute', 'osrclicns', 'thirtyday', 'days_to_next_admt']
   newcols.extend(['odiag%d' % i for i in range(25, ODIAG_COLS + 1)])
   newcols.extend(['oproc%d' % i for i in range(21, OPROC_COLS + 1)])
   newcols.extend(sorted(['DXCCS_' + dxccs for dxccs in set(dxmap.values())]))
-  newcols.extend(sorted(['PRCCS_' + dxccs for dxccs in set(prmap.values())]))
+  newcols.extend(sorted(['PRCCS_' + prccs for prccs in set(prmap.values())]))
   newcols.extend(sorted(set(elcommap.values())))
   newcols.extend(sorted(set(chcommap.values())))
   newcols.extend(sorted(set(cpmap.values())))
@@ -316,6 +325,7 @@ def processFiles(fin, fout):
   currentRln = ''
   sameRlnRows = []
   count = 0
+  eid = 1
   while (True):
     count = count + 1
     if (count % 100000 == 0):
@@ -324,13 +334,13 @@ def processFiles(fin, fout):
     process = False
     if not line:
       processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, elcommap, chcommap, cpmap)
-      fout.writelines([','.join([item for item in row]) + '\n' for row in sameRlnRows])
+      eid = writeLines(col, fout, sameRlnRows, eid)
       break
     row = line.strip('\n').split(',')
     row.extend([''] * len(newcols))
     if (currentRln != row[col['rln']]):
       processRowsSameRln(sameRlnRows, col, delcolsnum, odxcols, oprcols, dxmap, prmap, elcommap, chcommap, cpmap)
-      fout.writelines([','.join([item for item in row]) + '\n' for row in sameRlnRows])
+      eid = writeLines(col, fout, sameRlnRows, eid)
       sameRlnRows.clear()
       currentRln = row[col['rln']]
     sameRlnRows.append(row)
