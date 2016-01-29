@@ -19,9 +19,7 @@ def addColumns(col, newcols):
 #####################################
 #add the new response columns for the next length of stay and next cost
 def writeHeader(fout) :
-  keys = list(col.keys())
-  for delcol in delCols:
-    keys.remove(delcol)
+  keys = [item[0] for item in sorted(col.items(), key = lambda item: item[1]) if item[0] not in delCols]
   fout.write(','.join(keys) + '\n')
 
 ######################################
