@@ -36,6 +36,9 @@ def processFiles(fin, fout) :
     if count % 100000 == 0:
       print('Processing ' + str(count) + ' row')
     nextline = row
+    # change sex value to KENSCI schema value
+    if currline[col['sex']] == '2':
+      currline[col['sex']] = '0'
     if currline[col['rln']] == nextline[col['rln']] :
       newColList = [nextline[col['los_adj']], nextline[col['charge']]]
       currline.extend(newColList)
