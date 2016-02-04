@@ -43,19 +43,19 @@ def processFiles(fin, fout) :
       newColList = [nextline[col['los_adj']], nextline[col['charge']]]
       currline.extend(newColList)
     else :
-      currline.extend("")
-      currline.extend("")
+      currline.append("")
+      currline.append("")
     # delete columns
     for num in delcolsnum:
       del currline[num]
-    out.writerow(currline)
+    fout.write(','.join(currline) + '\n')
     currline = nextline
-  currline.extend("")
-  currline.extend("")
+  currline.append("")
+  currline.append("")
   # delete columns
   for num in delcolsnum:
     del currline[num]
-  out.writerow(currline)
+  fout.write(','.join(currline) + '\n')
 
 #####################################
 #Main
