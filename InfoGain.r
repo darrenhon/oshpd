@@ -1,5 +1,5 @@
 InformationGain <- function( tble ) {
-tble <- as.data.frame.matrix(tble)
+tble <- as.df.frame.matrix(tble)
 entropyBefore <- Entropy(colSums(tble))
 s <- rowSums(tble)
 entropyAfter <- sum (s / sum(s) * apply(tble, MARGIN = 1, FUN = Entropy ))
@@ -14,27 +14,25 @@ Entropy <- function( vls ) {
 }
 
 # everything is hard-coded
-calculateIg <- function()
+calculateIg <- function(df, targetCol)
 {
-  data = readRDS('OSHPD_CLEAN_LOS.rds')
-
   # convert NA to 0
-  for (i in 100:647)
+  for (i in 1:ncol(df))
   {
-    data[,i][is.na(data[,i])] = 0
+    df[,i][is.na(df[,i])] = 0
   }
 
-  # stupid steps to create a data frame to hold column names and information gain
-  ig = data.frame(col=character(0), ig = character(0))
-  ig = rbind(ig, c(names(data)[1], InformationGain(table(data[,c(1,98)]))))
+  # stupid steps to create a df frame to hold column names and information gain
+  ig = df.frame(col=character(0), ig = character(0))
+  ig = rbind(ig, c(names(df)[1], InformationGain(table(df[,c(1,targetCol)]))))
   names(ig) = c('col', 'ig')
   ig$col = as.character(ig$col)
   ig$ig = as.character(ig$ig)
 
-  for (i in 2:ncol(data))
+  for (i in 2:ncol(df))
   {
-    thisig = InformationGain(table(data[,c(i,98)]))
-    colname = names(data)[i]
+    thisig = InformationGain(table(df[,c(i,98)]))
+    colname = names(df)[i]
     ig = rbind(ig, c(colname, thisig))
     write.csv(ig, 'ig.csv', row.names=F, quote=F)
     print(paste(colname, thisig))
