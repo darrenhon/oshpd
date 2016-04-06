@@ -35,8 +35,8 @@ for seq in seqs:
   # skip sequence longer than 100
   if len(seq[0]) >= 100: continue
   for i in range(len(seq[0])):
-    for j in range(i + 1):
-      key = ','.join(seq[0][j:i + 1]) + ',' + seq[1][i] 
+    for j in range(len(seq[0]) - i):
+      key = ','.join(seq[0][j:j + i + 1]) + ',' + seq[1][i] 
       dum = fout.write(key + '\n') 
       if key in freq:
         freq[key] = freq[key] + 1
