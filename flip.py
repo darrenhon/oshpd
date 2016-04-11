@@ -2,15 +2,13 @@ import ocsv
 import sys
 
 # argv[1] - input file
-# argv[2] - response column name
-# argv[3] - name of the column to be flipped
-# argv[4] - output file
+# argv[2] - name of the column to be flipped
+# argv[3] - output file
 
 fin = open(sys.argv[1], 'r')
 
 col = ocsv.getColumns(fin.readline())
-response = col[sys.argv[2]]
-flipCol = col[sys.argv[3]]
+flipCol = col[sys.argv[2]]
 
 currentpid = ''
 # list of list of list
@@ -21,22 +19,24 @@ def func(line):
   pid = row[col['PID']]
   if pid == currentpid:
     seqs[-1][0].append(row[flipCol])
-    seqs[-1][1].append(row[response])
+    seqs[-1][1].append(row[col['thirtyday']])
   else:
-    seqs.append([[row[flipCol]], [row[response]]])
+    seqs.append([[row[flipCol]], [row[col['thirtyday']]]])
   currentpid = pid
 
 ocsv.runFunc(fin, func)
 fin.close()
 
 freq = dict()
-fout = open(sys.argv[4], 'w')
+fout = open(sys.argv[3], 'w')
 for seq in seqs:
   # skip sequence longer than 100
-  if len(seq[0]) >= 100: continue
+  if len(seq[0]) >= 50: continue
+  # take the last 7 items only
+  #if len(seq[0]) > 7: seq[0] = seq[0][-7:]
   for i in range(len(seq[0])):
     for j in range(len(seq[0]) - i):
-      key = ','.join(seq[0][j:j + i + 1]) + ',' + seq[1][i] 
+      key = ','.join(seq[0][j:j + i + 1]) + ',' + seq[1][j + i] 
       dum = fout.write(key + '\n') 
       if key in freq:
         freq[key] = freq[key] + 1
