@@ -4,6 +4,7 @@ import sys
 # argv[1] - test data file
 # argv[2] - flip data file
 # argv[3] - flipped column
+# argv[4] - test on fixed seq length
 
 seqs = dict()
 fflip = open(sys.argv[2], 'r')
@@ -25,18 +26,22 @@ trueneg = 0
 falsepos = 0
 falseneg = 0
 rowcount = 0
+seqLength = int(sys.argv[4]) if len(sys.argv) > 4 else 0
 def nb(line):
   global currentPID, currentSeq, truepos, trueneg, falsepos, falseneg, rowcount
-  rowcount = rowcount + 1
   row = line.strip().split(',')
   if row[col['PID']] != currentPID:
     currentSeq = []
   currentPID = row[col['PID']]
   currentSeq.append(row[col[sys.argv[3]]])
+  if seqLength > 0 and len(currentSeq) < seqLength:
+    return
+  rowcount = rowcount + 1
   votes = []
   # compare the first 7 items only
   #for i in range(1, min(7, len(currentSeq)) + 1):
-  for i in range(1, len(currentSeq) + 1):
+  loop = [seqLength] if seqLength > 0 else range(1, len(currentSeq) + 1)
+  for i in loop:
     subseq = ','.join(currentSeq[-i:])
     count0 = seqs[subseq + ',0'] if subseq + ',0' in seqs else 0
     count1 = seqs[subseq + ',1'] if subseq + ',1' in seqs else 0
@@ -54,8 +59,11 @@ def nb(line):
 
 ocsv.runFunc(ftest, nb)
 
-print('truepos', truepos)
-print('trueneg', trueneg)
-print('falsepos', falsepos)
-print('falseneg', falseneg)
+print('T+', truepos)
+print('T-', trueneg)
+print('F+', falsepos)
+print('F-', falseneg)
 print('rowcount', rowcount)
+print('accuracy', (truepos + trueneg) / rowcount)
+print('precision', truepos / (truepos + falsepos))
+print('baseline', (trueneg + falsepos) / rowcount)
