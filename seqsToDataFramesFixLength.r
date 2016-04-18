@@ -7,10 +7,27 @@ close(con)
 
 dfs = list()
 
-for (i in 2:5)
+for (i in 2:21)
 {
-  rows = fin[Vectorize(function (row) length(row) == i)(fin)]
-  dfs[length(dfs) + 1] = data.frame(matrix(unlist(rows), nrow=length(rows), byrow=T))
+  print(i)
+  rows = fin[sapply(fin, function(row) length(row)==i)]
+  df = data.frame(matrix(unlist(rows), nrow=length(rows), byrow=T))
+  names(df)[ncol(df)] = 'class'
+  dfs[[length(dfs) + 1]] = df
 }
 
+# create models by training data sequences
+models = sapply(dfs, function(df) rpart(class~., data = df, method='class'))
 
+# predict by testing data sequences
+acc <- function(df){
+  results = predict(models[[ncol(df) - 1]], df, type='class')
+  tp = nrow(df[df$class == results & df$class == 1,])
+  tn = nrow(df[df$class == results & df$class == 0,])
+  fp = nrow(df[df$class != results & df$class == 0,])
+  ac = (tp+tn)/length(results)
+  pr = tp / (tp+fp)
+  ba = (tn + fp) / length(results)
+  return(c(ac,if (is.finite(pr)) pr else 0,ba))
+}
+results = t(sapply(dfs, acc))
