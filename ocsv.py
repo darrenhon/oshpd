@@ -3,7 +3,7 @@ import datetime
 
 # read column names
 def getColumns(line):
-  items = line.split(',')
+  items = line.strip().split(',')
   col = dict()
   for i in range(len(items)):
     col[items[i]] = i;
