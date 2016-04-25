@@ -51,7 +51,9 @@ def nb(line):
 
 seqRange = range(int(sys.argv[5]), int(sys.argv[6]) + 1) if len(sys.argv) > 4 else [0]
 fout = open(sys.argv[4], 'w')
-fout.write('SeqLength,T+,T-,F+,F-,rowcount,accuracy,precision,baseline\n')
+msg = 'SeqLength,T+,T-,F+,F-,rowcount,accuracy,precision,baseline'
+fout.write(msg + '\n')
+print(msg)
 for seqLength in seqRange:
   ftest = open(sys.argv[1], 'r')
   col = ocsv.getColumns(ftest.readline())
@@ -62,9 +64,10 @@ for seqLength in seqRange:
   falsepos = 0
   falseneg = 0
   rowcount = 0
-  seqLength = int(sys.argv[4]) if len(sys.argv) > 4 else 0
   ocsv.runFunc(ftest, nb)
   ftest.close()
   result = [seqLength, truepos, trueneg, falsepos, falseneg, rowcount, (truepos + trueneg) / rowcount, truepos / (truepos + falsepos), (trueneg + falsepos) / rowcount]
-  fout.write(','.join([str(item) for item in result]) + '\n')
+  msg = ','.join([str(item) for item in result])
+  fout.write(msg + '\n')
+  print(msg)
 fout.close()
