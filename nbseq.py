@@ -4,7 +4,9 @@ import sys
 # argv[1] - test data file
 # argv[2] - flip data file
 # argv[3] - flipped column
-# argv[4] - test on fixed seq length
+# argv[4] - result csv
+# argv[5] - test on fixed seq length - min
+# argv[6] - test on fixed seq length - max
 
 seqs = dict()
 fflip = open(sys.argv[2], 'r')
@@ -17,16 +19,6 @@ for line in fflip:
 
 fflip.close()
 
-ftest = open(sys.argv[1], 'r')
-col = ocsv.getColumns(ftest.readline())
-currentPID = ''
-currentSeq = []
-truepos = 0
-trueneg = 0
-falsepos = 0
-falseneg = 0
-rowcount = 0
-seqLength = int(sys.argv[4]) if len(sys.argv) > 4 else 0
 def nb(line):
   global currentPID, currentSeq, truepos, trueneg, falsepos, falseneg, rowcount
   row = line.strip().split(',')
@@ -57,13 +49,22 @@ def nb(line):
   else:
     falseneg = falseneg + 1
 
-ocsv.runFunc(ftest, nb)
-
-print('T+', truepos)
-print('T-', trueneg)
-print('F+', falsepos)
-print('F-', falseneg)
-print('rowcount', rowcount)
-print('accuracy', (truepos + trueneg) / rowcount)
-print('precision', truepos / (truepos + falsepos))
-print('baseline', (trueneg + falsepos) / rowcount)
+seqRange = range(int(sys.argv[5]), int(sys.argv[6]) + 1) if len(sys.argv) > 4 else [0]
+fout = open(sys.argv[4], 'w')
+fout.write('SeqLength,T+,T-,F+,F-,rowcount,accuracy,precision,baseline\n')
+for seqLength in seqRange:
+  ftest = open(sys.argv[1], 'r')
+  col = ocsv.getColumns(ftest.readline())
+  currentPID = ''
+  currentSeq = []
+  truepos = 0
+  trueneg = 0
+  falsepos = 0
+  falseneg = 0
+  rowcount = 0
+  seqLength = int(sys.argv[4]) if len(sys.argv) > 4 else 0
+  ocsv.runFunc(ftest, nb)
+  ftest.close()
+  result = [seqLength, truepos, trueneg, falsepos, falseneg, rowcount, (truepos + trueneg) / rowcount, truepos / (truepos + falsepos), (trueneg + falsepos) / rowcount]
+  fout.write(','.join([str(item) for item in result]) + '\n')
+fout.close()
