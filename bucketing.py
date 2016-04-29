@@ -49,15 +49,15 @@ def bucketLOS(los):
 def bucketCost(cost):
   if cost == '': return ''
   fcost = float(cost)
-  # chf
-  #if fcost < 20650: return '1'
-  #elif fcost < 42580: return '2'
-  #elif fcost < 88030: return '3'
-  # all cause
-  if fcost < 12690: return '1'
-  elif fcost < 29550: return '2'
-  elif fcost < 62160: return '3'
-  else: return '4'
+  if chf:
+    if fcost < 27660: return '1'
+    elif fcost < 49810: return '2'
+    elif fcost < 98500: return '3'
+  else:
+    if fcost < 19080: return '1'
+    elif fcost < 35690: return '2'
+    elif fcost < 70450: return '3'
+  return '4'
 
 def convert(line):
   newline = line.strip()
@@ -74,6 +74,7 @@ def convert(line):
 skipLast = sys.argv[3] == 'True'
 fin = open(sys.argv[1], 'r')
 fout = open(sys.argv[2], 'w')
+chf = 'chf' in sys.argv[1].lower()
 colline = fin.readline().strip()
 col = ocsv.getColumns(colline)
 dxmap = parseICD9Mapping('AppendixASingleDX.txt')
