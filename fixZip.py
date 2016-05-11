@@ -43,8 +43,8 @@ def processSamePIDRows(rows):
         rows[i][col['patzip']] = rows[i - 1][col['patzip']]
     # replace from the front
     for i in range(len(rows) - 1, 0, -1):
-      if rows[i][col['patzip']] in badZips and rows[i - 1][col['patzip']] not in badZips:
-        rows[i][col['patzip']] = rows[i - 1][col['patzip']]
+      if rows[i - 1][col['patzip']] in badZips and rows[i][col['patzip']] not in badZips:
+        rows[i - 1][col['patzip']] = rows[i][col['patzip']]
   elif badZips == patZips:
     # replace by majority hospital zip
     hplZipTbl = ocsv.table([row[col['hplzip']] for row in rows])
