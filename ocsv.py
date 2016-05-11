@@ -10,7 +10,7 @@ def getColumns(line):
   return col
 
 # run func for each line of fin
-def runFunc(fin, func):
+def runFunc(fin, func, needEnd = False):
   print('Start at ' + str(datetime.datetime.now()))
   count = 0
   while True:
@@ -20,4 +20,12 @@ def runFunc(fin, func):
     if not line:
       break
     func(line)
+  if needEnd:
+    func(None)
   print('End at ' + str(datetime.datetime.now()))
+
+def table(items):
+  result = dict()
+  for item in items:
+    result[item] = result[item] + 1 if item in result else 1
+  return result
