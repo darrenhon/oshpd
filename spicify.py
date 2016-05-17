@@ -27,7 +27,7 @@ ocsv.runFunc(fin, getSeqs)
 fin.close()
 
 fout = open(out, 'w')
-dum = fout.write(str(len(seqs)) + ' ' + str(len(syms)) + '\n')
+dum = fout.write(str(len(seqs)) + ' ' + str(max([int(sym) for sym in syms]) + 1) + '\n')
 
 for seq in seqs:
   fout.write(str(len(seq)) + ' ' + ' '.join(seq) + '\n')
