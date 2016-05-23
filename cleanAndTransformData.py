@@ -117,8 +117,8 @@ def parseICD9Mapping(path):
         elif icd9line == '\n':
           break
         for icd9 in icd9line.split(' '):
-          if icd9 != '':
-            result[icd9.strip('\n')] = ccs
+          if icd9.strip() != '':
+            result[icd9.strip()] = ccs
     except:
       continue
     if quit:
