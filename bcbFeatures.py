@@ -2,7 +2,7 @@ import ocsv, sys, pyZipCode
 
 def parseICD9Mapping(path):
   fin = open(path, 'r')
-  result = dict()
+  result = {'':''}
   quit = False
   while (True):
     done = False

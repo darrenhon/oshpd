@@ -7,7 +7,7 @@ import sys
 
 def parseICD9Mapping(path):
   fin = open(path, 'r')
-  result = dict()
+  result = {'':''}
   quit = False
   while (True):
     done = False
