@@ -1,3 +1,4 @@
+# input path is either AppendixASingleDX.txt or AppendixBSinglePR.txt
 def parseICD9Mapping(path):
   fin = open(path, 'r')
   result = {'':''}
@@ -29,6 +30,8 @@ def parseICD9Mapping(path):
   fin.close()
   return result
 
+# path is icd9_to_charlson_comorbidities.txt
+# dxmap is the map returned by parseICD9Mapping(AppendixASingleDX.txt)
 def parseCharlsonComorbidityMapping(path, dxmap):
   fin = open(path, 'r')
   allDx = sorted(dxmap.keys())
@@ -68,6 +71,8 @@ def parseCharlsonComorbidityMapping(path, dxmap):
   fin.close()
   return result
 
+# path is comformat2012-2015.txt
+# dxmap is the map returned by parseICD9Mapping(AppendixASingleDX.txt)
 def parseElixhauserComorbidityMapping(path, dxmap):
   fin = open(path, 'r')
   allDx = sorted(dxmap.keys())
